@@ -1,7 +1,7 @@
 .PHONY: images test
 
 VERSION = 1.0.0
-SERVICE = jenca-projects
+SERVICE = jenca-runtime
 HUBACCOUNT = jenca
 
 ROOT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
