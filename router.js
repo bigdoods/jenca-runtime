@@ -1,6 +1,8 @@
 var HttpHashRouter = require('http-hash-router')
 
 var Version = require('./routes/version')
+var Start = require('./routes/start')
+var Stop = require('./routes/stop')
 
 module.exports = function(config){
 
@@ -8,6 +10,14 @@ module.exports = function(config){
 
   router.set('/v1/version', {
     GET:Version(config)
+  })
+
+  router.set('/v1/start', {
+    GET:Start(config)
+  })
+
+  router.set('/v1/stop', {
+    GET:Stop(config)
   })
 
   function handler(req, res) {
