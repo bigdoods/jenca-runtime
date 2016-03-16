@@ -13,11 +13,11 @@ module.exports = function(config){
   })
 
   router.set('/v1/start', {
-    GET:Start(config)
+    POST:Start(config)
   })
 
   router.set('/v1/stop', {
-    GET:Stop(config)
+    POST:Stop(config)
   })
 
   function handler(req, res) {

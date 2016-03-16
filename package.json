@@ -27,10 +27,12 @@
     "tape": "^4.3.0"
   },
   "dependencies": {
+    "async": "^1.5.2",
     "concat-stream": "^1.5.1",
+    "duplexer2": "^0.1.4",
     "http-hash-router": "^1.1.0",
+    "hyperrequest": "0.0.4",
     "minimist": "^1.2.0",
-    "through2": "^2.0.1",
-    "duplexer2": "^0.1.4"
+    "through2": "^2.0.1"
   }
 }
