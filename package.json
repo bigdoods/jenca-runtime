@@ -33,6 +33,7 @@
     "http-hash-router": "^1.1.0",
     "hyperrequest": "0.0.4",
     "minimist": "^1.2.0",
+    "request": "^2.69.0",
     "through2": "^2.0.1"
   }
 }

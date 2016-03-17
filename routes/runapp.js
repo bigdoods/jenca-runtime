@@ -1,6 +1,6 @@
 var path = require('path')
 var concat = require('concat-stream')
-var hyperrequest = require('hyperrequest')
+var request = require('hyperrequest')
 var async = require('async')
 
 module.exports = function(body, done){
@@ -9,6 +9,9 @@ module.exports = function(body, done){
   var app = body.app
   var controller = app.controller
   var service = app.service
+  var appid = (name + '-' + id).replace(/\W/g, '').toLowerCase().substr(0,24)
+
+  var controllerData, serviceData
 
   async.series([
 
@@ -20,8 +23,29 @@ module.exports = function(body, done){
       console.log('-------------------------------------------');
       console.log('-------------------------------------------');
       console.log('running controller')
+
+      controller.metadata.name = appid
+      controller.metadata.labels.name = appid
+      controller.spec.selector.app = appid
+      controller.spec.template.metadata.name = appid
+      controller.spec.template.metadata.labels.app = appid
+
       console.log(JSON.stringify(controller, null, 4))
-      next()
+      request({
+        url: "https://" + process.env.KUBERNETES_SERVICE_HOST + ":443/api/v1/namespaces/default/replicationcontrollers",
+        method: "POST",
+        headers:{
+          'Content-type':'application/json'
+        },
+        body:JSON.stringify(controller)
+      }, function(err, resp){
+
+        if(err) return next(err.toString())
+
+        controllerData = resp.body
+        next()
+      })
+
     },
 
     function(next){
@@ -32,8 +56,27 @@ module.exports = function(body, done){
       console.log('-------------------------------------------');
       console.log('-------------------------------------------');
       console.log('running service')
-      console.log(JSON.stringify(service, null, 4))
-      next()
+
+      service.metadata.name = appid
+      service.metadata.labels.app = appid
+      service.spec.selector.app = appid
+      service.spec.Type = 'NodePort'
+
+      request({
+        url: "https://" + process.env.KUBERNETES_SERVICE_HOST + ":443/api/v1/namespaces/default/services",
+        method: "POST",
+        headers:{
+          'Content-type':'application/json'
+        },
+        body:JSON.stringify(service)
+      }, function(err, resp){
+
+        if(err) return next(err.toString())
+
+        serviceData = resp.body
+        next()
+      })
+
     },
 
     function(next){
@@ -48,7 +91,11 @@ module.exports = function(body, done){
   ], function(err){
     if(err) return done(err)
     done(null, {
-      k8s:true
+      id:appid,
+      data:{
+        controller:controllerData,
+        service:serviceData
+      }
     })
   })
 
